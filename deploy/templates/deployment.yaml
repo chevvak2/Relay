@@ -40,7 +40,7 @@ spec:
             - name: TR_ANNOTATOR
               value: {{ .Values.arsserver.env.TR_ANNOTATOR }}
             - name: TR_JAEGERUI
-              value: {{ .Values.arsserver.env.TR_JAEGERUI }}
+              value: {{ .Values.arsserver.env.JAEGER_HOST }}
           {{- with .Values.arsserver.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
@@ -62,7 +62,7 @@ spec:
             - name: TR_ANNOTATOR
               value: {{ .Values.celeryworker.env.TR_ANNOTATOR }}
             - name: TR_JAEGERUI
-              value: {{ .Values.celeryworker.env.TR_JAEGERUI }}
+              value: {{ .Values.celeryworker.env.JAEGER_HOST }}
           {{- with .Values.celeryworker.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
