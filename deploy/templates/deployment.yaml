@@ -27,6 +27,9 @@ spec:
             - name: config-vol
               mountPath: /ars/tr_sys/tr_sys/settings.py
               subPath: settings.py
+            - name: config-otel-vol
+              mountPath: /ars/tr_sys/tr_sys/otel_config.py
+              subPath: otel_config.py
             - name: config-cnf-vol
               mountPath: /etc/mysql/my.cnf
               subPath: mysql.cnf
@@ -54,6 +57,9 @@ spec:
             - name: config-vol
               mountPath: /ars/tr_sys/tr_sys/settings.py
               subPath: settings.py
+            - name: config-otel-vol
+              mountPath: /ars/tr_sys/tr_sys/otel_config.py
+              subPath: otel_config.py
           env:
             - name: TR_APPRAISE
               value: {{ .Values.celeryworker.env.TR_APPRAISE }}
@@ -100,6 +106,12 @@ spec:
             items:
               - key: settings.py
                 path: settings.py
+        - name: config-otel-vol
+          configMap:
+            name: {{ .Values.appname }}-otel-config
+            items:
+              - key: otel_config.py
+                path: otel_config.py
         - name: config-cnf-vol
           configMap:
             name: {{ .Values.appname }}-cnf-config
