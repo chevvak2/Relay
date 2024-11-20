@@ -32,4 +32,4 @@ metadata:
   labels:
     {{- include "ars.labels" . | nindent 4 }}
 data:
-  {{- (.Files.Glob "configs/*.conf").AsConfig | nindent 2 }}
+  {{- (.Files.Glob "configs/*.ini").AsConfig | nindent 2 }}
