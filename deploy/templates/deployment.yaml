@@ -41,6 +41,8 @@ spec:
               value: {{ .Values.arsserver.env.TR_ANNOTATOR }}
             - name: LICENSE_KEY
               value: {{ .Values.arsserver.env.LICENSE_KEY }}
+            - name: APP_NAME
+              value: {{ .Values.arsserver.env.APP_NAME }}
           {{- with .Values.arsserver.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
