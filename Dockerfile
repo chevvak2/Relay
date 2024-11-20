@@ -12,6 +12,7 @@ RUN pip install --no-cache-dir newrelic
 
 COPY requirements.txt /ars/
 RUN pip install -r requirements.txt
-COPY . /ars/
+COPY . /ars/ 
+RUN pwd && ls -ltra 
 RUN newrelic-admin generate-config $NEWRELIC_KEY /ars/newrelic.ini 
 RUN mv wait-for /bin/wait-for
