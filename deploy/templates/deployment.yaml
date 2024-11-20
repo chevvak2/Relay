@@ -30,9 +30,6 @@ spec:
             - name: config-cnf-vol
               mountPath: /etc/mysql/my.cnf
               subPath: mysql.cnf
-            - name: config-newrelic-vol
-              mountPath: /ars/newrelic.ini
-              subPath: newrelic.ini
           env:
             - name: TR_ENV
               value: {{ .Values.arsserver.env.TR_ENV }}
@@ -115,12 +112,6 @@ spec:
             items:
               - key: mysql.cnf
                 path: mysql.cnf
-        - name: config-newrelic-vol
-          configMap:
-            name: {{ .Values.appname }}-newrelic-config
-            items:
-              - key: newrelic.ini
-                path: newrelic.ini
         - name: config-rabbit-vol
           configMap:
             name: {{ .Values.appname }}-rabbitmq-config
