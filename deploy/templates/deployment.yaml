@@ -20,7 +20,7 @@ spec:
           image: "{{ .Values.arsserver.image.repository }}:{{ .Values.arsserver.image.tag }}"
           imagePullPolicy: {{ .Values.arsserver.image.PullPolicy }}
           command: ["/bin/sh"]
-          args: ["-c", "/bin/bash /ars/config/startup.sh && export license_key=$LICENSE_KEY && export app_name=$APP_NAME && newrelic-admin run-program && python tr_sys/manage.py runserver 0.0.0.0:8000 --noreload"]
+          args: ["-c", "/bin/bash /ars/config/startup.sh && export license_key=$LICENSE_KEY && export app_name=$APP_NAME && newrelic-admin run-program python tr_sys/manage.py runserver 0.0.0.0:8000 --noreload"]
           ports:
             - containerPort: {{ .Values.arsserver.containerPort }}
           volumeMounts:
