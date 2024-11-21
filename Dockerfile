@@ -13,3 +13,6 @@ COPY requirements.txt /ars/
 RUN pip install -r requirements.txt
 COPY . /ars/ 
 RUN mv wait-for /bin/wait-for
+
+# Set the entrypoint for New Relic monitoring
+ENTRYPOINT ["newrelic-admin", "run-program"]
