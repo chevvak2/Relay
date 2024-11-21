@@ -5,7 +5,7 @@ ENV PYTHONUNBUFFERED=1
 WORKDIR /ars
 
 RUN apt-get update && apt install -y netcat
-#newRelic changes
+#New Relic Install
 RUN pip install --no-cache-dir newrelic
 
 
