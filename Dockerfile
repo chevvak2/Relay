@@ -9,6 +9,7 @@ RUN apt-get update && apt install -y netcat
 #New Relic Install
 RUN pip install --no-cache-dir newrelic
 
+RUN mv newrelic.ini /ars/.pyenv-python3.9/lib/python3.9/site-packages/newrelic/
 
 COPY requirements.txt /ars/
 RUN pip install -r requirements.txt
