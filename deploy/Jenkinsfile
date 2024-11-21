@@ -63,10 +63,8 @@ pipeline {
                 ]) {
                     script {
                         configFileProvider([
-                        configFile(fileId: 'newrelic.ini', targetLocation: 'newrelic.ini'),
-                        configFile(fileId: 'prepare.sh', targetLocation: 'deploy/prepare.sh')
+                        configFile(fileId: 'newrelic.ini', targetLocation: 'newrelic.ini')
                         ]){
-                        sh 'ls -ltra && cd deploy && /bin/bash prepare.sh'
                         docker.build("${env.IMAGE_NAME}", "--build-arg SOURCE_FOLDER=./${BUILD_VERSION} --no-cache ./")
                         sh '''
                         docker login -u AWS -p $(aws ecr get-login-password --region us-east-1) 853771734544.dkr.ecr.us-east-1.amazonaws.com
