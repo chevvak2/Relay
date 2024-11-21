@@ -20,8 +20,8 @@ spec:
           image: "{{ .Values.arsserver.image.repository }}:{{ .Values.arsserver.image.tag }}"
           imagePullPolicy: {{ .Values.arsserver.image.pullPolicy }}
           command: ["/bin/sh"]
-          args: ["-c", "/bin/bash /ars/config/startup.sh && sed -i 's/license_key = LICENSE_KEY_VALUE/license_key = $LICENSE_KEY/' newrelic.ini && \
-                        sed -i 's/app_name = APP_NAME_VALUE/app_name = \"$APP_NAME\"/' newrelic.ini && \
+          args: ["-c", "/bin/bash /ars/config/startup.sh && sed -i 's/LICENSE_KEY_VALUE=$LICENSE_KEY/g' newrelic.ini && \
+                        sed -i 's/APP_NAME_VALUE="$APP_NAME"/g' newrelic.ini && \
                         mv newrelic.ini /ars/.pyenv-python3.9/lib/python3.9/site-packages/newrelic/ && \
                         newrelic-admin run-program python tr_sys/manage.py runserver 0.0.0.0:8000 --noreload"]
           ports:
