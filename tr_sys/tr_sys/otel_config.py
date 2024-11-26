@@ -11,7 +11,7 @@ from opentelemetry.instrumentation.requests import RequestsInstrumentor
 from celery.signals import worker_process_init
 
 # Set the environment variable directly
-os.environ["OTEL_EXPORTER_OTLP_HEADERS"] = f"api-key={os.getenv('LICENSE_KEY')}"v
+os.environ["OTEL_EXPORTER_OTLP_HEADERS"] = f"api-key={os.getenv('LICENSE_KEY')}"
 
 def configure_opentelemetry():
 
