@@ -39,7 +39,7 @@ spec:
               value: {{ .Values.arsserver.env.TR_NORMALIZER }}
             - name: TR_ANNOTATOR
               value: {{ .Values.arsserver.env.TR_ANNOTATOR }}
-            - name: OTEL_EXPORTER_OTLP_HEADERS=api-key=
+            - name: OTEL_EXPORTER_OTLP_HEADERS=api-key
               value: {{ .Values.arsserver.env.LICENSE_KEY }}
             - name: APP_NAME
               value: {{ .Values.arsserver.env.APP_NAME }}
