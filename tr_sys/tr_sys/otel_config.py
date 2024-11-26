@@ -10,6 +10,8 @@ from opentelemetry.instrumentation.celery import CeleryInstrumentor
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
 from celery.signals import worker_process_init
 
+otel_headers = os.getenv("OTEL_EXPORTER_OTLP_HEADERS")
+
 def configure_opentelemetry():
 
     logging.info('About to instrument ARS app for OTEL')
