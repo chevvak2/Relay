@@ -27,7 +27,7 @@ def configure_opentelemetry():
 
         # Configure Jaeger Exporter
         OTLP_exporter = OTLPSpanExporter(
-            endpoint=f"http://{otlp_host}:{otlp_port}"
+            endpoint=f"https://{otlp_host}:{otlp_port}"
         )
 
         span_processor = BatchSpanProcessor(OTLP_exporter)
