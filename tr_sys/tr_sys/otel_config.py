@@ -15,7 +15,7 @@ def configure_opentelemetry():
 
     logging.info('About to instrument ARS app for OTEL')
     try:
-        otlp_host = os.environ.get('OTLP_HOST', 'jaeger-otel-collector.sri')
+        otlp_host = os.environ.get('OTLP_HOST', 'otlp.nr-data.net')
         otlp_port = int(os.environ.get('OTLP_PORT', '4317'))
         service_name= 'ARS'
         resource = Resource.create({telemetery_service_name_key: service_name})
