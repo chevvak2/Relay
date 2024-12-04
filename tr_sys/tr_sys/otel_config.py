@@ -10,7 +10,7 @@ from opentelemetry.instrumentation.celery import CeleryInstrumentor
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
 from celery.signals import worker_process_init
 from opentelemetry.sdk._logs import LoggingHandler, LoggerProvider
-from opentelemetry.sdk._logs.export import BatchLogProcessor
+from opentelemetry.sdk._logs.export import BatchLogRecordProcessor
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.exporter.otlp.proto.grpc._log_exporter import OTLPLogExporter
 
@@ -69,7 +69,7 @@ def configure_opentelemetry():
 
         # Logger provider setup
         logger_provider = LoggerProvider(resource=resource)
-        log_processor = BatchLogProcessor(CustomOTLPLogExporter(
+        log_processor = BatchLogRecordProcessor(CustomOTLPLogExporter(
             endpoint=f"https://{otlp_host}:{otlp_port}",
             headers=(("api-key", otel_headers),)))
         logger_provider.add_log_processor(log_processor)
