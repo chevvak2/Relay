@@ -64,6 +64,10 @@ spec:
               value: {{ .Values.celeryworker.env.TR_NORMALIZER }}
             - name: TR_ANNOTATOR
               value: {{ .Values.celeryworker.env.TR_ANNOTATOR }}
+            - name: OTEL_EXPORTER_OTLP_HEADERS
+              value: {{ .Values.arsserver.env.LICENSE_KEY }}
+            - name: APP_NAME
+              value: {{ .Values.arsserver.env.APP_NAME }}
           {{- with .Values.celeryworker.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
