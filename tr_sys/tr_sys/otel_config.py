@@ -9,7 +9,6 @@ from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExport
 from opentelemetry.instrumentation.celery import CeleryInstrumentor
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
 from celery.signals import worker_process_init
-from newrelic.agent import NewRelicContextFormatter
 
 otel_headers = os.getenv("OTEL_EXPORTER_OTLP_HEADERS")
 
@@ -41,18 +40,10 @@ def configure_opentelemetry():
 
         DjangoInstrumentor().instrument()
         RequestsInstrumentor().instrument()
-
-        # Set up New Relic logging
-        new_relic_log_handler = logging.StreamHandler()
-        new_relic_log_handler.setFormatter(NewRelicContextFormatter())
-        logger = logging.getLogger()  # Root logger
-        logger.addHandler(new_relic_log_handler)
-        logger.setLevel(logging.INFO)
         
         @worker_process_init.connect(weak=False)
         def init_celery_tracing(*args, **kwargs):
             CeleryInstrumentor().instrument()
-
 
         logging.info('Finished instrumenting ARS app for OTEL')
     except Exception as e:
