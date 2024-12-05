@@ -9,10 +9,7 @@ from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExport
 from opentelemetry.instrumentation.celery import CeleryInstrumentor
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
 from celery.signals import worker_process_init
-from opentelemetry.sdk._logs import LoggingHandler, LoggerProvider
-from opentelemetry.sdk._logs.export import BatchLogRecordProcessor
-from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
-from opentelemetry.exporter.otlp.proto.grpc._log_exporter import OTLPLogExporter
+from newrelic.agent import NewRelicContextFormatter
 
 otel_headers = os.getenv("OTEL_EXPORTER_OTLP_HEADERS")
 
@@ -31,7 +28,8 @@ def configure_opentelemetry():
 
         # Configure Jaeger Exporter
         OTLP_exporter = OTLPSpanExporter(
-            endpoint=f"https://{otlp_host}:{otlp_port}"
+            endpoint=f"https://{otlp_host}:{otlp_port}",
+            headers=(("api-key", otel_headers),)
         )
 
         span_processor = BatchSpanProcessor(OTLP_exporter)
@@ -40,44 +38,17 @@ def configure_opentelemetry():
         # Optional: Console exporter for debugging
         console_exporter = ConsoleSpanExporter()
         tracer_provider.add_span_processor(BatchSpanProcessor(console_exporter))
-
-        # Define custom log record mapping to define how log records are mapped
-        def map_log_record(record: logging.LogRecord) -> dict:
-            # Get current span from the context
-            span = trace.get_current_span()
-            span_context = span.get_span_context() if span else None
-
-            return {
-                "severity_text": record.levelname,
-                "severity_number": record.levelno,
-                "body": record.getMessage(),
-                "attributes": {
-                    "logger.name": record.name,
-                    "file.name": record.pathname,
-                    "line.number": record.lineno,
-                    "function.name": record.funcName,
-                    "thread.name": record.threadName,
-                    "trace_id": span_context.trace_id if span_context else None,
-                    "span_id": span_context.span_id if span_context else None,
-                },
-            }
-        # Custom LogExporter that uses the mapping
-        class CustomOTLPLogExporter(OTLPLogExporter):
-            def export(self, batch):
-                mapped_logs = [map_log_record(record) for record in batch]
-                return super().export(mapped_logs)
-
-        # Logger provider setup
-        logger_provider = LoggerProvider(resource=resource)
-        log_processor = BatchLogRecordProcessor(CustomOTLPLogExporter(
-            endpoint=f"https://{otlp_host}:{otlp_port}",
-            headers=(("api-key", otel_headers),)))
-        logger_provider.add_log_processor(log_processor)
-        logging.getLogger().addHandler(LoggingHandler(logger_provider=logger_provider))
-
+        
         DjangoInstrumentor().instrument()
         RequestsInstrumentor().instrument()
 
+        # Set up New Relic logging
+        new_relic_log_handler = logging.StreamHandler()
+        new_relic_log_handler.setFormatter(NewRelicContextFormatter())
+        logger = logging.getLogger()  # Root logger
+        logger.addHandler(new_relic_log_handler)
+        logger.setLevel(logging.INFO)
+        
         @worker_process_init.connect(weak=False)
         def init_celery_tracing(*args, **kwargs):
             CeleryInstrumentor().instrument()
