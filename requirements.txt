@@ -28,6 +28,7 @@ opentelemetry-exporter-jaeger
 opentelemetry-exporter-otlp-proto-grpc
 opentelemetry-instrumentation-requests
 opentelemetry-instrumentation-celery
+opentelemetry-exporter-otlp
 brotli
 git+https://github.com/biothings/biothings_annotator#egg=biothings_annotator
 newrelic
