@@ -9,10 +9,59 @@ from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExport
 from opentelemetry.instrumentation.celery import CeleryInstrumentor
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
 from celery.signals import worker_process_init
-from newrelic.agent import NewRelicContextFormatter
 
 otel_headers = os.getenv("OTEL_EXPORTER_OTLP_HEADERS")
 
+# Function to retrieve trace context
+def get_trace_context():
+    span = trace.get_current_span()
+    if span and span.get_span_context().is_valid:
+        return {
+            "trace_id": f"{span.get_span_context().trace_id:032x}",
+            "span_id": f"{span.get_span_context().span_id:016x}",
+        }
+    return {}
+
+# Function to send logs to New Relic
+def send_log_to_new_relic(message, level="INFO"):
+    context = get_trace_context()
+    log_entry = {
+        "common": {
+            "attributes": {
+                "service.name": "ARS",
+                "host": os.getenv("HOSTNAME", "unknown"),
+            }
+        },
+        "logs": [
+            {
+                "timestamp": int(logging.time.time() * 1000),
+                "message": message,
+                "level": level,
+                "trace.id": context.get("trace_id"),
+                "span.id": context.get("span_id"),
+            }
+        ],
+    }
+    endpoint = "https://otlp.nr-data.net/v1/logs"
+    headers = {
+        "Content-Type": "application/json",
+        "Api-Key": otel_headers,
+    }
+
+    try:
+        with httpx.Client() as client:
+            response = client.post(endpoint, headers=headers, data=json.dumps(log_entry))
+            if response.status_code != 202:
+                logging.error(f"Failed to send log to New Relic: {response.text}")
+    except Exception as e:
+        logging.error(f"Error while sending log to New Relic: {str(e)}")
+
+class NewRelicLoggingHandler(logging.Handler):
+    def emit(self, record):
+        log_entry = self.format(record)
+        level = record.levelname
+        send_log_to_new_relic(log_entry, level)
+        
 def configure_opentelemetry():
 
     logging.info('About to instrument ARS app for OTEL')
@@ -41,18 +90,15 @@ def configure_opentelemetry():
 
         DjangoInstrumentor().instrument()
         RequestsInstrumentor().instrument()
-
-        # Set up New Relic logging
-        new_relic_log_handler = logging.StreamHandler()
-        new_relic_log_handler.setFormatter(NewRelicContextFormatter())
-        logger = logging.getLogger()  # Root logger
-        logger.addHandler(new_relic_log_handler)
-        logger.setLevel(logging.INFO)
         
         @worker_process_init.connect(weak=False)
         def init_celery_tracing(*args, **kwargs):
             CeleryInstrumentor().instrument()
-
+        
+        # Configure logging to use New Relic handler
+        new_relic_handler = NewRelicLoggingHandler()
+        new_relic_handler.setLevel(logging.INFO)
+        logging.getLogger().addHandler(new_relic_handler)
 
         logging.info('Finished instrumenting ARS app for OTEL')
     except Exception as e:
