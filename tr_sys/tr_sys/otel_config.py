@@ -58,7 +58,10 @@ def configure_opentelemetry():
             ),
         )
         set_logger_provider(logger_provider)
-        exporter = OTLPLogExporter(insecure=True)
+        exporter = OTLPLogExporter(
+            endpoint=f"https://{otlp_host}:{otlp_port}",
+            headers=(("api-key",otel_headers),)
+            )
         logger_provider.add_log_record_processor(BatchLogRecordProcessor(exporter))
         handler = LoggingHandler(level=logging.NOTSET, logger_provider=logger_provider)
 
