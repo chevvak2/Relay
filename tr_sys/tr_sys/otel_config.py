@@ -64,7 +64,7 @@ def configure_opentelemetry():
 
         # Attach OTLP handler to root logger
         logging.getLogger().addHandler(handler)
-        logger_provider.shutdown()
+        #logger_provider.shutdown()
         
         logging.info('Finished instrumenting ARS app for OTEL')
     except Exception as e:
