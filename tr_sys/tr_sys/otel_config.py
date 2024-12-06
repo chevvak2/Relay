@@ -9,66 +9,20 @@ from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExport
 from opentelemetry.instrumentation.celery import CeleryInstrumentor
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
 from celery.signals import worker_process_init
+from opentelemetry._logs import set_logger_provider
+from opentelemetry.exporter.otlp.proto.grpc._log_exporter import OTLPLogExporter
+from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
+from opentelemetry.sdk._logs.export import BatchLogRecordProcessor
 
-otel_headers = os.getenv("OTEL_EXPORTER_OTLP_HEADERS")
-
-# Function to retrieve trace context
-def get_trace_context():
-    span = trace.get_current_span()
-    if span and span.get_span_context().is_valid:
-        return {
-            "trace_id": f"{span.get_span_context().trace_id:032x}",
-            "span_id": f"{span.get_span_context().span_id:016x}",
-        }
-    return {}
-
-# Function to send logs to New Relic
-def send_log_to_new_relic(message, level="INFO"):
-    context = get_trace_context()
-    log_entry = {
-        "common": {
-            "attributes": {
-                "service.name": "ARS",
-                "host": os.getenv("HOSTNAME", "unknown"),
-            }
-        },
-        "logs": [
-            {
-                "timestamp": int(logging.time.time() * 1000),
-                "message": message,
-                "level": level,
-                "trace.id": context.get("trace_id"),
-                "span.id": context.get("span_id"),
-            }
-        ],
-    }
-    endpoint = f"https://{otlp_host}:{otlp_port}"
-    headers = {
-        "Content-Type": "application/json",
-        "Api-Key": otel_headers,
-    }
-
-    try:
-        with httpx.Client() as client:
-            response = client.post(endpoint, headers=headers, data=json.dumps(log_entry))
-            if response.status_code != 202:
-                logging.error(f"Failed to send log to New Relic: {response.text}")
-    except Exception as e:
-        logging.error(f"Error while sending log to New Relic: {str(e)}")
-
-class NewRelicLoggingHandler(logging.Handler):
-    def emit(self, record):
-        log_entry = self.format(record)
-        level = record.levelname
-        send_log_to_new_relic(log_entry, level)
-        
 def configure_opentelemetry():
 
     logging.info('About to instrument ARS app for OTEL')
     try:
         otlp_host = os.environ.get('OTLP_HOST', 'otlp.nr-data.net')
         otlp_port = int(os.environ.get('OTLP_PORT', '4317'))
+        otel_headers = os.getenv("OTEL_EXPORTER_OTLP_HEADERS")
         service_name= 'ARS'
+        service_instance='Test'
         resource = Resource.create({telemetery_service_name_key: service_name})
 
         trace.set_tracer_provider(TracerProvider(resource=resource))
@@ -95,11 +49,23 @@ def configure_opentelemetry():
         def init_celery_tracing(*args, **kwargs):
             CeleryInstrumentor().instrument()
         
-        # Configure logging to use New Relic handler
-        new_relic_handler = NewRelicLoggingHandler()
-        new_relic_handler.setLevel(logging.INFO)
-        logging.getLogger().addHandler(new_relic_handler)
+        logger_provider = LoggerProvider(
+            resource=Resource.create(
+                {
+                    "service.name": service_name,
+                    "service.instance.id": service_instance,
+                }
+            ),
+        )
+        set_logger_provider(logger_provider)
+        exporter = OTLPLogExporter(insecure=True)
+        logger_provider.add_log_record_processor(BatchLogRecordProcessor(exporter))
+        handler = LoggingHandler(level=logging.NOTSET, logger_provider=logger_provider)
 
+        # Attach OTLP handler to root logger
+        logging.getLogger().addHandler(handler)
+        logger_provider.shutdown()
+        
         logging.info('Finished instrumenting ARS app for OTEL')
     except Exception as e:
         logging.error('OTEL instrumentation failed because: %s'%str(e))
