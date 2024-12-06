@@ -42,7 +42,7 @@ def send_log_to_new_relic(message, level="INFO"):
             }
         ],
     }
-    endpoint = "https://otlp.nr-data.net/v1/logs"
+    endpoint = f"https://{otlp_host}:{otlp_port}"
     headers = {
         "Content-Type": "application/json",
         "Api-Key": otel_headers,
