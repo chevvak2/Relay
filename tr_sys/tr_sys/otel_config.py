@@ -65,7 +65,7 @@ def configure_opentelemetry():
             headers=(("api-key",otel_headers),)
             )
         logger_provider.add_log_record_processor(BatchLogRecordProcessor(exporter))
-        handler = LoggingHandler(level=INFO, logger_provider=logger_provider)
+        handler = LoggingHandler(level=logging.INFO, logger_provider=logger_provider)
 
         # Attach OTLP handler to root logger
         logging.getLogger().addHandler(handler)
