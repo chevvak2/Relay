@@ -46,10 +46,10 @@ def configure_opentelemetry():
             print(f"Current root logger level: {logging.getLevelName(logger.getEffectiveLevel())}")
             otlp_handler_exists = any(isinstance(handler, LoggingHandler) for handler in logger.handlers)
             print(f"OTLP handler attached: {otlp_handler_exists}")
-            for handler in root_logger.handlers:
+            for handler in logger.handlers:
                 print(f"Handler: {handler}, Level: {handler.level}, Formatter: {handler.formatter}")
                 if isinstance(handler, LoggingHandler):  # Or any specific condition
-                    root_logger.removeHandler(handler)
+                    logger.removeHandler(handler)
             
             logger.addHandler(handler)
             logger.setLevel(logging.INFO)
