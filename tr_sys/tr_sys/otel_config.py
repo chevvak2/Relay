@@ -35,8 +35,9 @@ def configure_opentelemetry():
         )
         set_logger_provider(logger_provider)
         log_exporter = OTLPLogExporter(
-            endpoint=f"http://otlp.nr-data.net:4317",
-            insecure=True)
+            endpoint=f"https://otlp.nr-data.net:4317",
+            headers=(("api-key",otel_headers),)
+        )
         logger_provider.add_log_record_processor(BatchLogRecordProcessor(log_exporter))
         handler = LoggingHandler(level=logging.INFO, logger_provider=logger_provider)
 
