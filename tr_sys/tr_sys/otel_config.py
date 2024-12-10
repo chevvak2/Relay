@@ -18,8 +18,10 @@ def configure_opentelemetry():
 
     logging.info('About to instrument ARS app for OTEL')
     try:
-        otlp_host = os.environ.get('OTLP_HOST', 'gov-otlp.nr-data.net')
-        otlp_port = int(os.environ.get('OTLP_PORT', '4317'))
+        #otlp_host = os.environ.get('OTLP_HOST', 'gov-otlp.nr-data.net')
+        otlp_host = 'gov-otlp.nr-data.net'
+        #otlp_port = int(os.environ.get('OTLP_PORT', '4317'))
+        otlp_port = 4318
         otel_headers = os.getenv("OTEL_EXPORTER_OTLP_HEADERS")
         service_name= 'ARS'
         service_instance='Test'
@@ -63,7 +65,7 @@ def configure_opentelemetry():
             headers=(("api-key",otel_headers),)
             )
         logger_provider.add_log_record_processor(BatchLogRecordProcessor(exporter))
-        handler = LoggingHandler(level=logging.NOTSET, logger_provider=logger_provider)
+        handler = LoggingHandler(level=INFO, logger_provider=logger_provider)
 
         # Attach OTLP handler to root logger
         logging.getLogger().addHandler(handler)
