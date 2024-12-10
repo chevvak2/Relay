@@ -18,7 +18,7 @@ def configure_opentelemetry():
 
     logging.info('About to instrument ARS app for OTEL')
     try:
-        otlp_host = os.environ.get('OTLP_HOST', 'otlp.nr-data.net')
+        otlp_host = os.environ.get('OTLP_HOST', 'gov-otlp.nr-data.net')
         otlp_port = int(os.environ.get('OTLP_PORT', '4317'))
         otel_headers = os.getenv("OTEL_EXPORTER_OTLP_HEADERS")
         service_name= 'ARS'
