@@ -13,11 +13,11 @@ from opentelemetry._logs import set_logger_provider
 from opentelemetry.exporter.otlp.proto.grpc._log_exporter import OTLPLogExporter
 from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
 from opentelemetry.sdk._logs.export import BatchLogRecordProcessor
-from opentelemetry.sdk._logs import LoggingHandler
+
 
 def configure_opentelemetry():
     
-    logging.basicConfig(level=logging.DEBUG)
+    #logging.basicConfig(level=logging.DEBUG)
     logging.info('About to instrument ARS app for OTEL')
     try:
         #otlp_host = os.environ.get('OTLP_HOST', 'gov-otlp.nr-data.net')
@@ -43,13 +43,13 @@ def configure_opentelemetry():
         # Attach OTLP handler to root logger
         try:
             logger = logging.getLogger()
-            print(f"Current root logger level: {logging.getLevelName(logger.getEffectiveLevel())}")
-            otlp_handler_exists = any(isinstance(handler, LoggingHandler) for handler in logger.handlers)
-            print(f"OTLP handler attached: {otlp_handler_exists}")
-            for handler in logger.handlers:
-                print(f"Handler: {handler}, Level: {handler.level}, Formatter: {handler.formatter}")
-                if isinstance(handler, LoggingHandler):  # Or any specific condition
-                    logger.removeHandler(handler)
+           # print(f"Current root logger level: {logging.getLevelName(logger.getEffectiveLevel())}")
+          #  otlp_handler_exists = any(isinstance(handler, LoggingHandler) for handler in logger.handlers)
+          #  print(f"OTLP handler attached: {otlp_handler_exists}")
+           # for handler in logger.handlers:
+       #         print(f"Handler: {handler}, Level: {handler.level}, Formatter: {handler.formatter}")
+        #        if isinstance(handler, LoggingHandler):  # Or any specific condition
+        #            logger.removeHandler(handler)
             
             logger.addHandler(handler)
             logger.setLevel(logging.INFO)
