@@ -148,9 +148,8 @@ LOGGING = {
         'tr_ars.default_ars_app.api': {
             'level': 'DEBUG',
             'handlers': ['console']
-        }
-    }
-
+        },
+    },
 }
 
 # Password validation
