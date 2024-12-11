@@ -156,9 +156,8 @@ LOGGING = {
             'level': 'DEBUG',
             'handlers': ['console','opentelemtry'],
             'propagate': True,
-        }
-    }
-
+        },
+    },
 }
 
 # Password validation
