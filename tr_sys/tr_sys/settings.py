@@ -67,6 +67,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'opentelemetry.instrumentation.django.middleware.OpenTelemetryMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -142,7 +143,12 @@ LOGGING = {
         'console': {
             'class': 'logging.StreamHandler',
             'formatter': 'otel'
-        }
+        },
+        'opentelemetry': {
+            'class': 'opentelemetry.sdk._logs.LoggingHandler',
+            'formatter': 'otel',
+            'level': 'DEBUG',
+        },
     },    
     'root': {
         'handlers': ['console'],
@@ -151,13 +157,18 @@ LOGGING = {
      'loggers': {
         'tr_ars.tasks': {
             'level': 'DEBUG',
-            'handlers': ['console'],
-            'propagate': False,
+            'handlers': ['console','opentelemetry'],
+            'propagate': True,
         },
         'tr_ars.default_ars_app.api': {
             'level': 'DEBUG',
-            'handlers': ['console'],
-            'propagate': False,
+            'handlers': ['console','opentelemetry'],
+            'propagate': True,
+        },
+        'django': {
+            'handlers': ['console', 'opentelemetry'],
+            'level': 'DEBUG',
+            'propagate': True,
         },
     },
 }
