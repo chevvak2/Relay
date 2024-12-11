@@ -130,9 +130,10 @@ DATABASES = {
 DJANGO_LOG_LEVEL = 'DEBUG'
 LOGGING = {
     'formatters': {
-        'simple': {
-            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+        'otel':  {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {trace_id} {span_id} {message}',
             'style': '{',
+            '()': '.logging_utils.OpenTelemetryFormatter', 
         }
     },
     'version': 1,
