@@ -133,7 +133,7 @@ LOGGING = {
         'otel':  {
             'format': '{levelname} {asctime} {module} {process:d} {thread:d} {trace_id} {span_id} {message}',
             'style': '{',
-            '()': '.logging_utils.OpenTelemetryFormatter', 
+            '()': 'tr_sys.logging_utils.OpenTelemetryFormatter', 
         }
     },
     'version': 1,
@@ -147,7 +147,8 @@ LOGGING = {
             'class': 'opentelemetry.sdk._logs.LoggingHandler',
             'formatter': 'otel',
             'level': 'INFO',
-    },
+        }
+    },    
     'root': {
         'handlers': ['console','opentelemtry' ],
         'level': 'DEBUG',
