@@ -134,17 +134,17 @@ LOGGING = {
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
-            'formatter': 'simple'
+            'formatter': 'otel'
         },
         'opentelemtry': {
             'class': 'opentelemetry.sdk._logs.LoggingHandler',
+            'formatter': 'otel',
             'level': 'INFO',
         }
     },
     'root': {
         'handlers': ['console','opentelemtry'],
         'level': 'DEBUG',
-        'propagate': True,
     },
     'loggers': {
         'tr_ars.tasks': {
