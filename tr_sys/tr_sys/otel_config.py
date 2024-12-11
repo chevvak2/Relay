@@ -39,21 +39,23 @@ def configure_opentelemetry():
             headers=(("api-key",otel_headers),)
         )
         logger_provider.add_log_record_processor(BatchLogRecordProcessor(log_exporter))
-        handler = LoggingHandler(level=logging.INFO, logger_provider=logger_provider)
+        handler = LoggingHandler(level=logging.DEBUG, logger_provider=logger_provider)
 
         # Attach OTLP handler to root logger
         try:
             logger = logging.getLogger()
-           # print(f"Current root logger level: {logging.getLevelName(logger.getEffectiveLevel())}")
-          #  otlp_handler_exists = any(isinstance(handler, LoggingHandler) for handler in logger.handlers)
-          #  print(f"OTLP handler attached: {otlp_handler_exists}")
-           # for handler in logger.handlers:
-       #         print(f"Handler: {handler}, Level: {handler.level}, Formatter: {handler.formatter}")
-        #        if isinstance(handler, LoggingHandler):  # Or any specific condition
-        #            logger.removeHandler(handler)
-            
             logger.addHandler(handler)
-            logger.setLevel(logging.INFO)
+            logger.setLevel(logging.DEBUG)
+            logger.info("Logger initialized and handler added.")
+            logger.info(f"Current root logger level: {logging.getLevelName(logger.getEffectiveLevel())}")
+            #otlp_handler_exists = any(isinstance(handler, LoggingHandler) for handler in logger.handlers)
+            #print(f"OTLP handler attached: {otlp_handler_exists}")
+            for handler in logger.handlers:
+               logger.info(f"Handler: {handler}, Level: {handler.level}, Formatter: {handler.formatter}")
+           #if isinstance(handler, LoggingHandler):  # Or any specific condition
+               #logger.removeHandler(handler)
+            
+
             logging.info("Handler attached successfully")
         except Exception as e:
             logging.info(f"Failed to attach handler: {e}")
